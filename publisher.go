@@ -8,9 +8,11 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-var (
-	ctx = context.Background()
-)
+var ctx = context.Background()
+
+type Message struct {
+	Content string `json:"content"`
+}
 
 func main() {
 	r := gin.Default()
@@ -20,9 +22,13 @@ func main() {
 		DB:   0,
 	})
 
-	r.POST("/publish/:message", func(c *gin.Context) {
-		message := c.Param("message")
-		err := rdb.Publish(ctx, "channel", message).Err()
+	r.POST("/publish", func(c *gin.Context) {
+		var message Message
+		if err := c.BindJSON(&message); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		err := rdb.Publish(ctx, "channel", message.Content).Err()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

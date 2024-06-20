@@ -10,13 +10,13 @@ import (
 )
 
 var (
-	cts = context.Background()
-	rdb = redis.NewClient(&redis.Options{
+	cts      = context.Background()
+	messages []string
+	mu       sync.Mutex
+	rdb      = redis.NewClient(&redis.Options{
 		Addr: "redis:6379",
 		DB:   0,
 	})
-	messages []string
-	mu       sync.Mutex
 )
 
 func main() {
