@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+  publisher:
+    build:
+      context: .
+      dockerfile: Dockerfile.publisher
+    depends_on:
+      - redis
+    ports:
+      - "8000:8000"
+
+  subscriber:
+    build:
+      context: .
+      dockerfile: Dockerfile.subscriber
+    depends_on:
+      - redis
+    ports:
+      - "8001:8001"
